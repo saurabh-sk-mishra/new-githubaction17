@@ -1,14 +1,18 @@
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
-  deploy:
+  terraform:
     runs-on: ubuntu-latest
     steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v3
+    - uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
       with:
-        role-to-assume: arn:aws:iam::721689331129:role/git-hub-action-updated
-        aws-region: us-east-1
-        
+        terraform_version: 1.6.0
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./infra  # <-- point to your config files
+
+    - name: Terraform Plan
+      run: terraform plan -input=false
+      working-directory: ./infra  # <-- same here
